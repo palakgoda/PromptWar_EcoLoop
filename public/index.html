@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoLoop - Carbon Footprint Tracker & Assistant</title>
+  <!-- Google Fonts for premium typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body class="dark-theme">
+  <!-- Onboarding / Persona Selection Modal -->
+  <div id="onboarding-overlay" class="overlay" role="dialog" aria-labelledby="onboarding-title" aria-modal="true">
+    <div class="overlay-content glass-panel">
+      <h1 id="onboarding-title" class="gradient-text">Welcome to EcoLoop</h1>
+      <p class="subtitle">Select your lifestyle profile to customize your carbon baseline and insights.</p>
+      
+      <div class="persona-grid" role="radiogroup" aria-label="Choose a lifestyle persona">
+        <!-- Persona 1: Student -->
+        <button type="button" class="persona-card" role="radio" aria-checked="false" data-persona="student" id="persona-student">
+          <div class="persona-icon">🎓</div>
+          <h3>Eco-Conscious Student</h3>
+          <p>Budget-conscious, highly aware. Baseline focuses on public transit, thrifting, and plant-based foods.</p>
+          <span class="baseline-badge">Est. baseline: 65 kg/wk</span>
+        </button>
+
+        <!-- Persona 2: Professional -->
+        <button type="button" class="persona-card" role="radio" aria-checked="false" data-persona="professional" id="persona-professional">
+          <div class="persona-icon">💼</div>
+          <h3>Busy Professional</h3>
+          <p>High travel/commute footprint. Focuses on convenience-based swaps, smart home devices, and carbon offsetting.</p>
+          <span class="baseline-badge">Est. baseline: 180 kg/wk</span>
+        </button>
+
+        <!-- Persona 3: Homemaker -->
+        <button type="button" class="persona-card" role="radio" aria-checked="false" data-persona="homemaker" id="persona-homemaker">
+          <div class="persona-icon">🏡</div>
+          <h3>Active Homemaker</h3>
+          <p>Family-focused. Aims for energy efficiency, reduced waste, smart grocery shopping, and water conservation.</p>
+          <span class="baseline-badge">Est. baseline: 120 kg/wk</span>
+        </button>
+      </div>
+
+      <button type="button" id="start-btn" class="primary-btn" disabled>Get Started</button>
+    </div>
+  </div>
+
+  <!-- Main Application Layout -->
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar glass-panel">
+      <div class="logo-area">
+        <div class="logo-icon">🌿</div>
+        <h2>EcoLoop</h2>
+      </div>
+
+      <nav aria-label="Main Navigation">
+        <ul class="nav-list">
+          <li>
+            <button class="nav-item active" data-tab="dashboard" aria-controls="tab-dashboard" id="btn-tab-dashboard">
+              <span class="nav-icon">📊</span> Dashboard
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-tab="calculator" aria-controls="tab-calculator" id="btn-tab-calculator">
+              <span class="nav-icon">🧮</span> Calculator
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-tab="habits" aria-controls="tab-habits" id="btn-tab-habits">
+              <span class="nav-icon">✅</span> Daily Habits
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-tab="assistant" aria-controls="tab-assistant" id="btn-tab-assistant">
+              <span class="nav-icon">💬</span> Green Guide
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="current-persona-info">
+          <span class="label">Current Profile</span>
+          <div class="val" id="display-persona">Not Selected</div>
+        </div>
+        <button type="button" id="reset-persona-btn" class="text-btn">Change Profile</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="main-content">
+      <!-- Top Header Bar -->
+      <header class="app-header">
+        <div class="welcome-text">
+          <h1 id="user-greeting">Welcome back!</h1>
+          <p>Your action today shapes tomorrow.</p>
+        </div>
+        <div class="header-badges">
+          <div class="badge score-badge">
+            <span class="badge-label">Weekly Carbon</span>
+            <span class="badge-val" id="header-footprint-val">0.0 kg</span>
+          </div>
+          <div class="badge streak-badge">
+            <span class="badge-label">Active Streak</span>
+            <span class="badge-val" id="header-streak-val">0 days</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard View -->
+      <section id="tab-dashboard" class="tab-panel active" aria-labelledby="btn-tab-dashboard" role="tabpanel">
+        <div class="grid-layout">
+          <!-- Main Progress Ring Card -->
+          <div class="glass-panel card progress-card highlight-border">
+            <h3>Weekly Reduction Goal</h3>
+            <div class="progress-container">
+              <div class="progress-ring-wrapper">
+                <svg width="200" height="200" viewBox="0 0 200 200" aria-label="Goal progress circular chart">
+                  <circle class="ring-bg" cx="100" cy="100" r="85" stroke-width="15" fill="transparent"/>
+                  <circle class="ring-fg" cx="100" cy="100" r="85" stroke-width="15" fill="transparent" stroke-linecap="round"/>
+                </svg>
+                <div class="progress-text">
+                  <span class="percent" id="goal-percent">0%</span>
+                  <span class="percent-label">Reduced</span>
+                </div>
+              </div>
+            </div>
+            <div class="goal-stats">
+              <div>
+                <span class="stat-label">Goal Target</span>
+                <span class="stat-val" id="goal-target-val">0.0 kg</span>
+              </div>
+              <div class="divider"></div>
+              <div>
+                <span class="stat-label">Saved This Week</span>
+                <span class="stat-val positive" id="saved-carbon-val">0.0 kg</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Breakdown Card -->
+          <div class="glass-panel card chart-card">
+            <h3>Emissions Breakdown</h3>
+            <div class="chart-container">
+              <!-- Custom clean CSS/SVG chart rendered dynamically -->
+              <div id="breakdown-svg-container"></div>
+            </div>
+            <div class="legend-container" id="chart-legend"></div>
+          </div>
+
+          <!-- Today's Impact Card -->
+          <div class="glass-panel card summary-card">
+            <h3>Today's Highlights</h3>
+            <div class="stat-item">
+              <div class="stat-icon bg-green">🚲</div>
+              <div class="stat-details">
+                <h4>Transit Avoided</h4>
+                <p id="stat-transit">No green transit logged today</p>
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon bg-blue">💡</div>
+              <div class="stat-details">
+                <h4>Energy Conserved</h4>
+                <p id="stat-energy">No energy habits logged today</p>
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon bg-orange">🥗</div>
+              <div class="stat-details">
+                <h4>Dietary Impact</h4>
+                <p id="stat-diet">No meal swaps logged today</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Tip Recommendation Card -->
+          <div class="glass-panel card tip-card">
+            <h3>Personalized Insight</h3>
+            <div class="tip-content">
+              <div class="tip-bulb">💡</div>
+              <p id="dashboard-tip">Add your weekly habits or configure the tracker inputs to get customized sustainability tips.</p>
+            </div>
+            <button type="button" id="go-to-assistant-btn" class="secondary-btn">Ask Green Guide For Tips</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Calculator View -->
+      <section id="tab-calculator" class="tab-panel" aria-labelledby="btn-tab-calculator" role="tabpanel" hidden>
+        <div class="glass-panel form-panel">
+          <h2 class="section-title">Weekly Footprint Calculator</h2>
+          <p class="section-desc">Adjust these inputs to calculate your baseline weekly carbon footprint.</p>
+
+          <form id="calc-form">
+            <!-- Section: Transportation -->
+            <div class="form-section">
+              <h3>🚗 Transportation</h3>
+              <div class="form-group">
+                <label for="input-drive-miles">Weekly Driving (miles)</label>
+                <div class="slider-wrapper">
+                  <input type="range" id="input-drive-miles" min="0" max="500" value="100">
+                  <input type="number" id="input-drive-miles-num" min="0" max="500" value="100" aria-label="Driving miles input">
+                </div>
+                <span class="help-text">Average emissions: 0.35 kg CO2e per mile</span>
+              </div>
+              <div class="form-group">
+                <label for="input-flight-hours">Annual Flight Hours</label>
+                <div class="slider-wrapper">
+                  <input type="range" id="input-flight-hours" min="0" max="100" value="10">
+                  <input type="number" id="input-flight-hours-num" min="0" max="100" value="10" aria-label="Flight hours input">
+                </div>
+                <span class="help-text">Average emissions: 90 kg CO2e per flight hour</span>
+              </div>
+            </div>
+
+            <!-- Section: Home Energy -->
+            <div class="form-section">
+              <h3>⚡ Home Energy</h3>
+              <div class="form-group">
+                <label for="input-electricity">Monthly Electricity (kWh)</label>
+                <div class="slider-wrapper">
+                  <input type="range" id="input-electricity" min="0" max="1500" value="300">
+                  <input type="number" id="input-electricity-num" min="0" max="1500" value="300" aria-label="Electricity kWh input">
+                </div>
+                <span class="help-text">Based on regional grid intensity average of 0.4 kg CO2e per kWh</span>
+              </div>
+              <div class="form-group">
+                <label for="input-heating">Monthly Heating (Gas/Oil Therms)</label>
+                <div class="slider-wrapper">
+                  <input type="range" id="input-heating" min="0" max="200" value="40">
+                  <input type="number" id="input-heating-num" min="0" max="200" value="40" aria-label="Heating units input">
+                </div>
+              </div>
+            </div>
+
+            <!-- Section: Diet & Consumption -->
+            <div class="form-section">
+              <h3>🍔 Diet & Consumption</h3>
+              <div class="form-group">
+                <label for="input-meat-servings">Weekly Meat/Dairy Servings</label>
+                <div class="slider-wrapper">
+                  <input type="range" id="input-meat-servings" min="0" max="42" value="14">
+                  <input type="number" id="input-meat-servings-num" min="0" max="42" value="14" aria-label="Meat servings input">
+                </div>
+                <span class="help-text">Red meat has the highest impact (approx. 7.2 kg CO2e per serving)</span>
+              </div>
+              <div class="form-group">
+                <label for="input-waste-bags">Weekly Trash (Bags)</label>
+                <div class="slider-wrapper">
+                  <input type="range" id="input-waste-bags" min="0" max="10" value="2">
+                  <input type="number" id="input-waste-bags-num" min="0" max="10" value="2" aria-label="Trash bags input">
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="button" id="save-calc-btn" class="primary-btn">Save Calculator Baselines</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Habits View -->
+      <section id="tab-habits" class="tab-panel" aria-labelledby="btn-tab-habits" role="tabpanel" hidden>
+        <div class="glass-panel habits-panel">
+          <h2 class="section-title">Daily Green Actions</h2>
+          <p class="section-desc">Log your daily positive habits to directly offset and reduce your weekly footprint calculations.</p>
+
+          <div class="habits-list-container">
+            <div id="habits-list">
+              <!-- Habit Items Rendered Dynamically -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Assistant View -->
+      <section id="tab-assistant" class="tab-panel" aria-labelledby="btn-tab-assistant" role="tabpanel" hidden>
+        <div class="glass-panel assistant-panel">
+          <div class="assistant-chat-header">
+            <div class="assistant-avatar">🤖</div>
+            <div class="assistant-header-text">
+              <h2>Smart AI Green Guide</h2>
+              <span class="online-indicator">Connected to Google Gemini</span>
+            </div>
+          </div>
+
+          <div class="chat-display" id="chat-box" aria-live="polite">
+            <div class="message assistant-message">
+              <div class="message-content">
+                Hello! I am your **EcoLoop Guide**. Based on your selected profile and calculated baseline footprint, I can help you find realistic, direct paths to lower your impact. 
+                <br><br>
+                What area would you like to focus on today? (e.g., transportation hacks, reducing heating usage, or low-carbon meals)
+              </div>
+            </div>
+          </div>
+
+          <form id="chat-input-form" class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Ask your Green Guide..." aria-label="Type your message to the assistant" required autocomplete="off">
+            <button type="submit" id="chat-send-btn" class="primary-btn">Send</button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
