@@ -2,8 +2,6 @@
 
 EcoLoop is a responsive, highly interactive web application designed to help individuals understand, track, and reduce their carbon footprint through lifestyle adjustments, daily habit tracking, and personalized insights from a smart AI assistant.
 
-Live Demo / Repository: Challenge 3 Submission
-
 ---
 
 ## 1. Chosen Vertical & Target Personas
@@ -69,22 +67,12 @@ Where:
 ## 5. Setup & Local Installation
 
 ### Prerequisites
-*   Node.js (v18 or higher)
+*   [Node.js](https://nodejs.org/) (v18 or higher)
 *   NPM
 
-### Installation
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-2. Start the local server:
-   ```bash
-   npm start
-   ```
-3. Open [http://localhost:8080](http://localhost:8080) in your browser.
+### Installation & Execution
 
-### Running Automated Tests
-To run the automated validation tests for carbon math formulas:
+1. Clone the repository and navigate to the project directory:
 ```bash
-npm test
-```
+   git clone [https://github.com/palakgoda/PromptWar_EcoLoop.git](https://github.com/palakgoda/PromptWar_EcoLoop.git)
+   cd PromptWar_EcoLoop
